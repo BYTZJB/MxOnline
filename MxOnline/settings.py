@@ -16,6 +16,7 @@ import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(BASE_DIR, "apps"))
+sys.path.append(os.path.join(BASE_DIR, "extra_apps"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,6 +44,8 @@ INSTALLED_APPS = [
     'courses',
     'organization',
     'operation',
+    'xadmin',
+    'crispy_forms',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -61,7 +64,7 @@ ROOT_URLCONF = 'MxOnline.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +76,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'MxOnline.wsgi.application'
 
@@ -127,3 +131,6 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
