@@ -18,7 +18,7 @@ from django.contrib import admin
 import xadmin
 from django.views.generic import TemplateView
 
-from users.views import LoginView, RegisterView
+from users.views import LoginView, RegisterView, ActiveUserView, ResetPasswordView, ForgetPwdView, VerifyPasswordView
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
@@ -27,4 +27,8 @@ urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name="login"),
     url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^captcha/', include('captcha.urls')),
+    url(r'^forget/$', ForgetPwdView.as_view(), name="forget_pwd"),
+    url(r'^active/(?P<active_code>.*)/$', ActiveUserView.as_view(), name="user_active"),
+    url(r'^reset/(?P<reset_code>.*)/$', ResetPasswordView.as_view(), name="reset_pwd"),
+    url(r'^verify_pwd/$', VerifyPasswordView.as_view(), name="verify_pwd"),
 ]
