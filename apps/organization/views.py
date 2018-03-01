@@ -2,8 +2,10 @@
 from django.core.paginator import PageNotAnInteger
 from django.shortcuts import render, render_to_response
 from django.views.generic import View
+from django.http import HttpResponse
 from pure_pagination import Paginator
 
+from organization.forms import UserAskForm
 from .models import CourseOrg, CityDict
 
 
@@ -61,3 +63,24 @@ class OrgView(View):
             "hot_orgs": hot_orgs,
             "sort": sort,
         })
+
+class AddUserAskView(View):
+    """
+    用户添加咨询
+    """
+    def post(self, request):
+        userask_form = UserAskForm(request.POST)
+        if userask_form.is_valid():
+            user_ask = userask_form.save(commit=True)
+            return HttpResponse("{'status': 'success'}", content_type='application/json')
+        else:
+            return HttpResponse("{'status': 'fail', 'msg':{0}}".format(userask_form.errors), content_type='application/json')
+
+class OrgHomeView(View):
+    """
+    机构首页
+    """
+    def get(self, request, org_id):
+        course_org = CourseOrg.objects.get(id=int(org_id))
+
+
