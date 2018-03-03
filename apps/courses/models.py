@@ -9,7 +9,7 @@ from organization.models import CourseOrg
 
 class Course(models.Model):
     name = models.CharField(max_length=50, verbose_name=u"课程名称")
-    sourse_org = models.ForeignKey(CourseOrg , verbose_name=u"课程机构", null=True, blank=True)
+    course_org = models.ForeignKey(CourseOrg , verbose_name=u"课程机构", null=True, blank=True)
     desc = models.CharField(max_length=300, verbose_name=u"课程描述")
     detail = models.TextField(verbose_name=u"课程详情")
     degree = models.CharField(choices=(("cj", "初级"), ("zj", "中级"), ("gj", "高级")), max_length=2, verbose_name=u"难度")
@@ -17,7 +17,9 @@ class Course(models.Model):
     students = models.IntegerField(default=0, verbose_name=u"学习人数")
     fav_nums = models.IntegerField(default=0, verbose_name=u"收藏人数")
     image = models.ImageField(upload_to="courses/%Y/%m", verbose_name=u"封面图", max_length=100)
+    category = models.CharField(max_length=300, verbose_name=u"课程类别", default=u"后端开发")
     click_nums = models.IntegerField(default=0, verbose_name=u"点击数")
+    tag = models.CharField(default="", verbose_name=u"课程标签", max_length=300)
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加信息")
 
     class Meta:
@@ -26,6 +28,16 @@ class Course(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    #统计课程章节数
+    def get_zj_nums(self):
+        return self.lesson_set.all().count()
+
+    def get_learn_users(self):
+        return self.usercourse_set.all()[:5]
+
+    def count_course_teachers(self):
+        return self.course_org.teacher_set.count()
 
 
 class Lesson(models.Model):
