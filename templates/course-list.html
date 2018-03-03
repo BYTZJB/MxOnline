@@ -18,9 +18,10 @@
                 <div class="left layout">
                     <div class="head">
                         <ul class="tab_header">
-                            <li class="{%  if sort == ''%}active{% endif %}"><a href="?sort=">最新 </a></li>
-                            <li class="{%  if sort == 'hot'%}active{% endif %}"><a href="?sort=hot">最热门</a></li>
-                            <li class="{%  if sort == 'students'%}active{% endif %}"><a href="?sort=students">参与人数</a></li>
+                            <li class="{% if sort == '' %}active{% endif %}"><a href="?sort=">最新 </a></li>
+                            <li class="{% if sort == 'hot' %}active{% endif %}"><a href="?sort=hot">最热门</a></li>
+                            <li class="{% if sort == 'students' %}active{% endif %}"><a href="?sort=students">参与人数</a>
+                            </li>
                         </ul>
                     </div>
                     <div id="inWindow">
@@ -33,14 +34,14 @@
                                                  src="{{ MEDIA_URL }}{{ course.image }}">
                                         </a>
                                         <div class="des">
-                                            <a href="{% url 'course:course_detail' course.id  %}">
+                                            <a href="{% url 'course:course_detail' course.id %}">
                                                 <h2>{{ course.name }}</h2>
                                             </a>
                                             <span class="fl">时长：<i class="key">{{ course.learn_times }}</i></span>
                                             <span class="fr">学习人数：{{ course.students }}&nbsp;&nbsp;</span>
                                         </div>
                                         <div class="bottom">
-                                            <a href="{% url 'course:course_detail' course.id  %}"><span
+                                            <a href="{% url 'course:course_detail' course.id %}"><span
                                                     class="fl">来自{{ course.sourse_org.name }}</span></a>
                                             <span class="star fr  notlogin
                                         " data-favid="15">
@@ -76,25 +77,24 @@
                 <div class="right layout">
                     <div class="head">热门课程推荐</div>
                     <div class="group_recommend">
-                        {% for hot_course in hot_courses  %}
-                        <dl>
-                            <dt>
-                                <a target="_blank" href="">
-                                    <img width="240" height="220" class="scrollLoading"
-                                         src="{{ MEDIA_URL }}{{ hot_course.image }}">
-                                </a>
-                            </dt>
-                            <dd>
-                                <a target="_blank" href="detail/?course_id={{ hot_course_id }}"><h2> {{ hot_course.name }}</h2></a>
-                                <span class="fl">难度：<i class="key">{{ hot_course.get_degree_display}}</i></span>
-                            </dd>
-                        </dl>
+                        {% for hot_course in hot_courses %}
+                            <dl>
+                                <dt>
+                                    <a target="_blank" href="">
+                                        <img width="240" height="220" class="scrollLoading"
+                                             src="{{ MEDIA_URL }}{{ hot_course.image }}">
+                                    </a>
+                                </dt>
+                                <dd>
+                                    <a target="_blank" href="detail/?course_id={{ hot_course_id }}">
+                                        <h2> {{ hot_course.name }}</h2></a>
+                                    <span class="fl">难度：<i class="key">{{ hot_course.get_degree_display }}</i></span>
+                                </dd>
+                            </dl>
                         {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
     </section>
-{% endblock %}
-{% block custom_js %}
 {% endblock %}
