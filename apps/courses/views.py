@@ -1,13 +1,16 @@
 #encoding=utf8
+import json
+
 from django.core.paginator import PageNotAnInteger
+from django.http import HttpResponse
 from pure_pagination import Paginator
 from django.shortcuts import render
 # Create your views here.
 from django.views.generic.base import View
 
-from operation.models import UserFavorite
-from users.models import UserProfile
-from .models import Course
+from operation.models import UserFavorite, CourseComments, UserCourse
+from .models import Course, CourseResource
+from utils.mixin_utils import LoginRequiredMixin
 
 
 class CourseListView(View):
@@ -59,3 +62,69 @@ class CourseDetailView(View):
             "has_fav_course": has_fav_course,
             "has_fav_org": has_fav_org,
         })
+
+class CourseInfoView(LoginRequiredMixin, View):
+    """
+    课程章节信息
+    """
+    def get(self, request, course_id):
+        course = Course.objects.get(id = int(course_id))
+        all_resources = CourseResource.objects.filter(course=course )
+
+        #查询用户是否已经关联了该课程
+        user_courses = UserCourse.objects.filter(user=request.user, course=course)
+        if not user_courses:
+            user_course = UserCourse(user=request.user, course=course)
+            user_course.save()
+
+        user_courses = UserCourse.objects.filter(course=course)
+        user_ids = [user_course.user.id for user_course in user_courses]
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+        # 取出所有的课程id
+        course_ids = [user_course.id for user_course in all_user_courses]
+        relate_courses = Course.objects.filter(id__in=course_ids).order_by('-click_nums')[:5]
+        return render(request, "course-video.html", {
+            "course": course,
+            "course_resources": all_resources,
+            "relate_courses": relate_courses,
+        })
+
+class CourseCommentView(LoginRequiredMixin, View):
+    """
+    课程评论信息
+    """
+    def get(self, request, course_id):
+        course = Course.objects.get(id = int(course_id))
+        all_resources = CourseResource.objects.filter(course=course )
+        all_comments = CourseComments.objects.filter(course=course)
+
+        user_courses = UserCourse.objects.filter(course=course)
+        user_ids = [user_course.id for user_course in user_courses]
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)
+        # 取出所有的课程id
+        course_ids = [user_course.id for user_course in all_user_courses]
+        relate_courses = Course.objects.filter(id__in=course_ids).order_by('-click_nums')[:5]
+        return render(request, "course-comment.html", {
+            "course": course,
+            "all_resources": all_resources,
+            "all_comments": all_comments,
+            "relate_courses": relate_courses,
+        })
+
+class CourseAddCommentView(View):
+    """
+    添加课程评论信息
+    """
+    def post(self, request):
+        if not request.user.is_authenticated():
+            return HttpResponse(json.dumps({"status": "fail", "msg": "用户未登录"}), content_type="application/json")
+        course_id = int(request.POST.get("course_id"))
+        comment = request.POST.get("comments", "")
+        if not comment:
+            return HttpResponse(json.dumps({"status": "fail", "msg": "评论内容为空"}), content_type="application/json")
+        course = Course.objects.get(id = course_id)
+        course_comment = CourseComments(user=request.user, course=course, comments=comment)
+        course_comment.save()
+        return HttpResponse(json.dumps({"status": "success", "msg": "评论添加成功"}), content_type="application/json")
+
+
