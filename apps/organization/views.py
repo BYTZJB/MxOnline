@@ -192,3 +192,51 @@ class AddFavView(View):
             else:
                 return HttpResponse(json.dumps({'status': 'fail', 'msg':'收藏出错'}),  content_type='application/json')
 
+class OrgTeacherListView(View):
+    def get(self, request):
+        all_teacher = Teacher.objects.all()
+        # 对讲师进行分页
+        hot_teachers = all_teacher.order_by("-click_num")[:5]
+        sort = request.GET.get("sort", "")
+        if sort == "hot":
+            all_teacher.order_by("-click_num")
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        # Provide Paginator with the request object for complete querystring generation
+
+        p = Paginator(all_teacher, 1, request=request)
+
+        teachers = p.page(page)
+        teacher_nums = all_teacher.count()
+        return render(request, "teachers-list.html", {
+            "teachers": teachers,
+            "teacher_nums": teacher_nums,
+            "hot_teachers": hot_teachers,
+            "sort": sort,
+        })
+
+class OrgTeacherDetailView(View):
+    def get(self, request, teacher_id):
+        teacher = Teacher.objects.get(id=int(teacher_id))
+        all_courses = teacher.course_set.all()
+        org = teacher.org
+        hot_teacher = Teacher.objects.order_by("-click_num")[:5]
+        fav_teacher = False
+        fav_org = False
+        if UserFavorite.objects.filter(user=request.user, fav_id=teacher.id, fav_type=3):
+            fav_teacher = True
+        if UserFavorite.objects.filter(fav_id=org.id, fav_type=2):
+            fav_org = True
+
+        return render(request, "teacher-detail.html", {
+            "teacher": teacher,
+            "all_courses": all_courses,
+            "org": org,
+            "hot_teacher": hot_teacher,
+            "fav_teacher": fav_teacher,
+            "fav_org": fav_org,
+        })
+
