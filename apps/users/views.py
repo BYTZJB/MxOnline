@@ -3,16 +3,19 @@ import json
 
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
+from django.core.paginator import PageNotAnInteger
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
+from pure_pagination import Paginator
 
 # Create your views here.
 from django.views.generic.base import View
 
 from courses.models import Course
-from operation.models import UserCourse
+from operation.models import UserCourse, UserFavorite, UserMessage
+from organization.models import Teacher, CourseOrg
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 from .forms import LoginForm, RegisterForm, ForgetForm, UploadImageForm, ModifyPasswordForm, UserInfoForm
@@ -211,5 +214,58 @@ class UserCourseView(LoginRequiredMixin, View):
         courses = Course.objects.filter(id__in=courses_id)
         return render(request, "usercenter-mycourse.html", {
             "courses": courses,
+        })
+
+class UserFavCourseView(LoginRequiredMixin, View):
+    """
+    用户收藏
+    """
+    def get(self, request):
+        fav_courses = UserFavorite.objects.filter(user_id=request.user.id, fav_type=1)
+        courses_id = [ fav.fav_id for fav in fav_courses]
+        fav_courses = Course.objects.filter(id__in=courses_id)
+        return render(request, "usercenter-fav-course.html", {
+            "fav_courses": fav_courses,
+        })
+
+class UserFavTeacherView(LoginRequiredMixin, View):
+    """
+    用户收藏教师
+    """
+    def get(self, request):
+        fav_teachers = UserFavorite.objects.filter(user_id=request.user.id, fav_type=3)
+        teachers_id = [fav.fav_id for fav in fav_teachers]
+        fav_teachers = Teacher.objects.filter(id__in=teachers_id)
+        return render(request, "usercenter-fav-teacher.html", {
+            "fav_teachers": fav_teachers,
+        })
+
+class UserFavOrgView(LoginRequiredMixin, View):
+    """
+    用户收藏机构
+    """
+    def get(self, request):
+        fav_orgs = UserFavorite.objects.filter(user_id=request.user.id, fav_type=2)
+        orgs_id = [fav.fav_id for fav in fav_orgs]
+        fav_orgs = CourseOrg.objects.filter(id__in=orgs_id)
+        return render(request, "usercenter-fav-org.html", {
+            "fav_orgs": fav_orgs,
+        })
+
+class UserMessageView(LoginRequiredMixin, View):
+    """
+    用户消息
+    """
+    def get(self, request):
+        all_messages =  UserMessage.objects.filter(user=request.user.id)
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_messages, 1, request=request)
+        messages = p.page(page)
+        return render(request, "usercenter-message.html", {
+           "messages": messages,
         })
 

@@ -51,8 +51,8 @@
                         </div>
                     </div>
                     {% endif %}
-                    <a href="usercenter-message.html">
-                        <div class="msg-num"><span id="MsgNum">0</span></div>
+                    <a href="{% url 'users:user_message' %}">
+                        <div class="msg-num"><span id="MsgNum">{{ request.user.unread_nums }}</span></div>h
                     </a>
 
 
@@ -89,12 +89,8 @@
             <ul>
                 <li class="active2"><a href="{% url 'users:info' %}">个人资料</a></li>
                 <li><a href="{% url 'users:user_course' %}">我的课程</a></li>
-                <li><a href="usercenter-fav-course.html">我的收藏</a></li>
-                <li>
-                    <a href="usercenter-message.html" style="position: relative;">
-                        我的消息
-                    </a>
-                </li>
+                <li><a href="{% url 'users:user_fav_course' %}">我的收藏</a></li>
+                <li><a href="{% url 'users:user_message' %}" style="position: relative;">我的消息</a></li>
             </ul>
         </div>
 
@@ -456,5 +452,7 @@
     };
     with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com../api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
 </script>
+{% block custom_js %}
+{% endblock %}
 </body>
 </html>

@@ -53,6 +53,10 @@
                         <a style="color:white" class="fr loginbtn" href="{% url 'login' %}">登录<a>
 
                     {% endif %}
+                    <a href="{% url 'users:user_message' %}">
+                        <div class="msg-num"><span id="MsgNum">{{ request.user.unread_nums }}</span></div>
+                    </a>
+
                 </div>
             </div>
 
@@ -281,7 +285,7 @@
     }
 
     $('.collectionbtn').on('click', function () {
-        add_fav($(this), 1, 2);
+        add_fav($(this), {{ org.id }}, 2);
     });
 
     $(function () {
