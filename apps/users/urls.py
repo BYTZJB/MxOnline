@@ -2,7 +2,7 @@
 
 from django.conf.urls import url
 
-from users.views import UserInfoView, UploadImageView, UpdatePwdView , SendEmailCodeView, UpdateEmailView
+from users.views import UserInfoView, UploadImageView, UpdatePwdView, SendEmailCodeView, UpdateEmailView, UserCourseView
 
 urlpatterns = [
     #用户信息
@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^update/pwd/$', UpdatePwdView.as_view(), name="update_pwd"),
     # 发送邮箱验证码
     url(r'^sendemail_code/$', SendEmailCodeView.as_view(), name="send_email_code"),
-    url(r'^update_email/$', UpdateEmailView.as_view(), name="update_email")
+    url(r'^update_email/$', UpdateEmailView.as_view(), name="update_email"),
+    url(r'^courses/$', UserCourseView.as_view(), name="user_course"),
 ]

@@ -11,6 +11,8 @@ from django.db.models import Q
 # Create your views here.
 from django.views.generic.base import View
 
+from courses.models import Course
+from operation.models import UserCourse
 from utils.email_send import send_register_email
 from utils.mixin_utils import LoginRequiredMixin
 from .forms import LoginForm, RegisterForm, ForgetForm, UploadImageForm, ModifyPasswordForm, UserInfoForm
@@ -198,3 +200,16 @@ class UpdateEmailView(LoginRequiredMixin, View):
             return HttpResponse(json.dumps({"status":"success", "email":"邮箱修改成功"}), content_type="application/json")
         else:
             return HttpResponse(json.dumps({"status":"fail","email":"验证码出错"}), content_type="application/json")
+
+class UserCourseView(LoginRequiredMixin, View):
+    """
+    用户课程
+    """
+    def get(self, request):
+        user_courses = UserCourse.objects.filter(user_id=request.user.id)
+        courses_id = [ course.id for course in user_courses]
+        courses = Course.objects.filter(id__in=courses_id)
+        return render(request, "usercenter-mycourse.html", {
+            "courses": courses,
+        })
+
