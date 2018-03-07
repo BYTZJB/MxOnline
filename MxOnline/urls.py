@@ -21,7 +21,7 @@ from django.views.generic import TemplateView
 from django.views.static import serve
 
 from organization.views import OrgView
-from users.views import LoginView, RegisterView, ActiveUserView, ResetPasswordView, ForgetPwdView, VerifyPasswordView
+from users.views import LoginView, RegisterView, ActiveUserView, ResetPasswordView, ForgetPwdView, ModifyPasswordView
 from MxOnline.settings import MEDIA_ROOT
 
 urlpatterns = [
@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^forget/$', ForgetPwdView.as_view(), name="forget_pwd"),
     url(r'^active/(?P<active_code>.*)/$', ActiveUserView.as_view(), name="user_active"),
     url(r'^reset/(?P<reset_code>.*)/$', ResetPasswordView.as_view(), name="reset_pwd"),
-    url(r'^verify_pwd/$', VerifyPasswordView.as_view(), name="verify_pwd"),
+    url(r'^modify_pwd/$', ModifyPasswordView.as_view(), name="modify_pwd"),
     # 课程机构首页
     url(r'^org/', include("organization.urls", namespace="org")),
     # 课程url配置
@@ -42,5 +42,8 @@ urlpatterns = [
 
     # 配置上传文件的访问处理函数
     url(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),
+
+    # 用户相关url配置
+    url(r'^users/', include('users.urls', namespace="users"))
 
 ]
