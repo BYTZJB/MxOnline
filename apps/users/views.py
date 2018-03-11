@@ -4,9 +4,9 @@ import json
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import PageNotAnInteger
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from pure_pagination import Paginator
 
@@ -268,4 +268,10 @@ class UserMessageView(LoginRequiredMixin, View):
         return render(request, "usercenter-message.html", {
            "messages": messages,
         })
+
+class LogOutView(LoginRequiredMixin, View):
+    def get(self, request):
+        logout(request)
+        from django.core.urlresolvers import reverse
+        return HttpResponseRedirect(reverse("index"))
 

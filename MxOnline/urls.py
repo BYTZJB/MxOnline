@@ -21,7 +21,7 @@ from django.views.generic import TemplateView
 from django.views.static import serve
 
 from organization.views import OrgView
-from users.views import LoginView, RegisterView, ActiveUserView, ResetPasswordView, ForgetPwdView, ModifyPasswordView
+from users.views import LoginView, RegisterView, ActiveUserView, ResetPasswordView, ForgetPwdView, ModifyPasswordView, LogOutView
 from MxOnline.settings import MEDIA_ROOT
 
 urlpatterns = [
@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^captcha/', include('captcha.urls')),
     url(r'^$', TemplateView.as_view(template_name="index.html"), name="index"),
     url(r'^login/$', LoginView.as_view(), name="login"),
+    url(r'^logout/$', LogOutView.as_view(), name="logout"),
     url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^forget/$', ForgetPwdView.as_view(), name="forget_pwd"),
