@@ -5,4 +5,4 @@ static/
 *.zip
 *.png
 *.tar.gz
-migrations/*
+migrations
