@@ -1,5 +1,7 @@
 # encoding=utf8
 import json
+import logging
+logger = logging.getLogger('django.request')
 
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import make_password
@@ -152,10 +154,14 @@ class UploadImageView(LoginRequiredMixin, View):
     用户修改头像
     """
     def post(self, request):
+        logger.debug("begin, modify user's image!")
         image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)
         if image_form.is_valid():
+            logger.debug("image_form check is True!")
             image_form.save()
+            logger.debug("Return success!")
             return HttpResponse(json.dumps({"status":"success"}), content_type='application/json')
+        logger.debug("Return fail!")
         return HttpResponse(json.dumps({"status":"fail"}), content_type='application/json')
 
 class UpdatePwdView(View):
