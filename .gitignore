@@ -4,3 +4,5 @@ media/
 static/
 *.zip
 *.png
+*.tar.gz
+migrations/*
